@@ -14,6 +14,10 @@ public class Universe : MonoBehaviour {
 	public Text overworldScore;
 	public Text underworldScore;
 	public static Universe instance;
+	public float gameTimer = 120;
+	bool gameRunning = false;
+	public Text timerLabel;
+	public Menu menu;
 
 	public HighscoreFill whiteScoreboard;
 	public HighscoreFill blueScoreboard;
@@ -40,14 +44,33 @@ public class Universe : MonoBehaviour {
 		HighScores();
 	}
 
+	public void StartGame ()
+	{
+		gameTimer = 10;
+		gameRunning = true;
+	}
+
 	public void Update ()
 	{
+		if (gameRunning) {
+			gameTimer -= Time.deltaTime;
+			timerLabel.text = Mathf.RoundToInt(gameTimer).ToString();
+			if (gameTimer <= 0) {
+				GameOver();
+				menu.Show();
+			}
+		}
 		timer -= Time.deltaTime;
 		if (timer < 0) {
 			timer += Random.Range(15, 25);
 			world = (world+1)%maxworlds;
 			_spin();
 		}
+	}
+
+	public void GameOver ()
+	{
+		gameRunning = false;
 	}
 
 	public void AddScore (int score)

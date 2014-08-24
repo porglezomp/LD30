@@ -23,6 +23,11 @@ public class Tile : MonoBehaviour {
 	
 	public GameObject particles;
 
+	void Start ()
+	{
+		transform.localScale = Vector3.one * 8f/TileSpawner.w;
+	}
+
 	public void OnMouseOver ()
 	{
 		// Do some mouseover animation. Rotation jiggle?
@@ -38,10 +43,11 @@ public class Tile : MonoBehaviour {
 	public void OnMouseDrag ()
 	{
 		Vector2 delta = InputWorldPos() - grabPoint;
+		float maxDistance = 8f/TileSpawner.w;
 		if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y)) {
-			delta = new Vector2(Mathf.Clamp(delta.x, -1, 1), 0);
+			delta = new Vector2(Mathf.Clamp(delta.x, -maxDistance, maxDistance), 0);
 		} else {
-			delta = new Vector2(0, Mathf.Clamp(delta.y, -1, 1));
+			delta = new Vector2(0, Mathf.Clamp(delta.y, -maxDistance, maxDistance));
 		}
 		transform.position = new Vector3(startPoint.x + delta.x, 
 		                                 startPoint.y + delta.y, 
@@ -109,6 +115,7 @@ public class Tile : MonoBehaviour {
 		transform.position = goal;
 		animating = false;
 		int x, y;
+		AudioSource.PlayClipAtPoint(AssetManager.GetClink(), transform.position);
 		TileSpawner.WorldToTile(transform.position, out x, out y);
 //		TileSpawner.instance.stacks[x]--;
 		TileSpawner.instance.DetectBreaks();
@@ -117,6 +124,7 @@ public class Tile : MonoBehaviour {
 	public void Shatter()
 	{
 		Instantiate(particles, transform.position, Quaternion.identity);
+		AudioSource.PlayClipAtPoint(AssetManager.GetBang(), transform.position - Vector3.forward * 15);
 		Destroy(gameObject);
 	}
 }

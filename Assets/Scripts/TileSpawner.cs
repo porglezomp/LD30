@@ -9,8 +9,8 @@ public class TileSpawner : MonoBehaviour {
 	public static TileSpawner instance;
 
 	int combo = 0;
-	public const int w = 8;
-	public const int h = 8;
+	public const int w = 6;
+	public const int h = w;
 	const int tileStyles = 5;
 	public int[] stacks = new int[w];
 	Tile[,] tiles = new Tile[w, h];
@@ -223,23 +223,24 @@ public class TileSpawner : MonoBehaviour {
 			return false;
 		}
 	}
-	
+
+	const float fac = 0.95f*8/w;
+
 	public static Vector2 TileToWorld(int x, int y)
 	{
-		return new Vector2((x-3.5f) * 0.95f, (y-3.5f) * 0.95f);
+		return new Vector2(x * fac, y * fac);
 	}
 
-	// Algebra time!
-	// x(t) = (t-3.5) * 0.95
+	// Algebra time! (It used to be more complicated.)
+	// x(t) = t * 0.95
 	// =>
-	// x = (y-3.5) * 0.95
-	// x / 0.95 = y - 3.5
-	// x/0.95 + 3.5 = y
+	// x = y * 0.95
+	// x/0.95 = y
 
 	public static void WorldToTile(Vector2 pos, out int x, out int y)
 	{
-		x = Mathf.RoundToInt(pos.x/0.95f + 3.5f);
-		y = Mathf.RoundToInt(pos.y/0.95f + 3.5f);
+		x = Mathf.RoundToInt(pos.x/fac);
+		y = Mathf.RoundToInt(pos.y/fac);
 	}
 
 	public void SetTile(int x, int y, Tile t) {

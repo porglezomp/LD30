@@ -1,5 +1,5 @@
 Saturday
---------
+========
 
 *1:12 PM:* _LICECAP IS THE GREATEST EVER_
 
@@ -30,3 +30,30 @@ Saturday
 *10:30 PM:* Background animations
 *10:57 PM:* Stops for the night
 
+Sunday
+======
+
+*1:37 PM:* We're on a new computer here
+
+*1:50 ish PM:* And I am on a bus, going to the airport
+
+*2:11 PM:* We're at the airport, pausing the timelapse
+
+3:26 PM
+We're getting ready to board, do some work while waiting
+There will be power issues on the plane, graphics are powerhungry
+
+3:50 PM
+On the plane now
+Might have to cancel the timelapse if it's taking too much power
+
+3:53 PM
+Computers away
+4:30 PM
+Back
+
+5:00 ish PM
+Made sounds in Garageband
+Edit in audacity
+
+*5:20 PM:* Thwarted by airline pretzel packaging
