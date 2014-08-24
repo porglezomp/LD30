@@ -36,6 +36,7 @@ public class Universe : MonoBehaviour {
 	public void Start ()
 	{
 		Universe.instance = this;
+
 		HighScores();
 	}
 
