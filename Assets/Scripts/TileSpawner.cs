@@ -8,9 +8,10 @@ public class TileSpawner : MonoBehaviour {
 	public GameObject canvas;
 	public static TileSpawner instance;
 
+	int combo = 0;
 	public const int w = 8;
 	public const int h = 8;
-	const int tileStyles = 6;
+	const int tileStyles = 5;
 	public int[] stacks = new int[w];
 	Tile[,] tiles = new Tile[w, h];
 
@@ -152,14 +153,25 @@ public class TileSpawner : MonoBehaviour {
 
 	public void DoBreaks()
 	{
+		int breakids = 0;
+		int breaks=0;
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
-				if (tiles[x, y] == null) continue;
-				if (tiles[x, y].break_id != null) {
-					tiles[x, y].Shatter();
+				Tile tile = tiles[x, y];
+				if (tile == null || tile.animating) continue;
+				if (tile.break_id != null) {
+					breaks++;
+					if (tile.break_id > breakids) breakids = (int)tile.break_id;
+					tile.Shatter();
 					tiles[x, y] = null;
 				}
 			}
+		}
+		if (breaks > 0) {
+			if (combo > 0) print(breaks + " breaks. COMBO " + combo);
+			else print(breaks + " breaks, " + breakids + " unique.");
+			Universe.instance.AddScore(breaks*breaks * (combo+1));
+			combo++;
 		}
 		TileGravity();
 	}
@@ -192,6 +204,9 @@ public class TileSpawner : MonoBehaviour {
 
 	public bool Swap(int x1, int y1, int x2, int y2)
 	{
+		if (x1 != x2 || y1 != y2) {
+			combo = 0;
+		}
 		Tile temp = tiles[x1, y1];
 		tiles[x1, y1] = tiles[x2, y2];
 		tiles[x2, y2] = temp;

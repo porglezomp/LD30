@@ -1,13 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Universe : MonoBehaviour {
+	public const int maxworlds = 2;
 	public Color[] keyColor;
 	public Color[] fillColor;
+	public int[] scores = new int[maxworlds];
 	public Light keyLight;
 	public Light fillLight;
 	public Transform background;
 	public Transform spinner;
+	public Text overworldScore;
+	public Text underworldScore;
+	public static Universe instance;
+
 	float timer = 2;
 	int _world;
 	public int world {
@@ -22,14 +29,26 @@ public class Universe : MonoBehaviour {
 		}
 	}
 
+	public void Start ()
+	{
+		Universe.instance = this;
+	}
+
 	public void Update ()
 	{
 		timer -= Time.deltaTime;
 		if (timer < 0) {
 			timer += Random.Range(12, 18);
-			world = (world+1)%2;
+			world = (world+1)%maxworlds;
 			_spin();
 		}
+	}
+
+	public void AddScore (int score)
+	{
+		scores[world] += score;
+		overworldScore.text = scores[0] + " Points";
+		underworldScore.text = scores[1] + " Points";
 	}
 
 	IEnumerator _lightLerp (Light l, Color c1, Color c2)
