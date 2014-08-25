@@ -17,7 +17,11 @@ public class Universe : MonoBehaviour {
 	public float gameTimer = 120;
 	bool gameRunning = false;
 	public Text timerLabel;
+	public GameObject inputField;
+	public Image cover;
 	public Menu menu;
+	public Color[] gemColors;
+	public Color[] gemColors2;
 
 	public HighscoreFill whiteScoreboard;
 	public HighscoreFill blueScoreboard;
@@ -40,13 +44,16 @@ public class Universe : MonoBehaviour {
 	public void Start ()
 	{
 		Universe.instance = this;
-
+		inputField.SetActive(false);
+		inputField.GetComponent<InputField>().OnSelect(null);
+		inputField.GetComponent<InputField>().onSubmit.AddListener(SaveScores);
 		HighScores();
 	}
 
 	public void StartGame ()
 	{
-		gameTimer = 10;
+		TileSpawner.instance.Spawn();
+		gameTimer = 120;
 		gameRunning = true;
 	}
 
@@ -65,12 +72,19 @@ public class Universe : MonoBehaviour {
 			timer += Random.Range(15, 25);
 			world = (world+1)%maxworlds;
 			_spin();
+			TileSpawner.instance.Flip();
 		}
 	}
 
 	public void GameOver ()
 	{
 		gameRunning = false;
+		inputField.SetActive(true);
+		cover.enabled = true;
+		StartCoroutine(PAnim.Animation(1, PAnim.EaseInOut, (t) => {
+			cover.color = Color.Lerp(new Color(0, 0, 0, 0), new Color(0, 0, 0, 0.5f), t);
+		}));
+		TileSpawner.instance.End();
 	}
 
 	public void AddScore (int score)
@@ -154,5 +168,21 @@ public class Universe : MonoBehaviour {
 		whiteScoreboard.Fill();
 		blueScoreboard.Fill();
 		redScoreboard.Fill();
+	}
+
+	public void SaveScores(string name)
+	{
+//		print (name);
+		SaveScore ("b", scores[0], name);
+		SaveScore ("r", scores[1], name);
+		SaveScore ("w", scores[0]+scores[1], name);
+		scores[0] = 0;
+		scores[1] = 0;
+		AddScore(0);
+		inputField.SetActive(false);
+		StartCoroutine(PAnim.Animation(0.5f, PAnim.EaseInOut, (t) => {
+			cover.color = Color.Lerp(new Color(0, 0, 0, 0.5f), new Color(0, 0, 0, 0), t);
+		}, completion: () => {cover.enabled = false;}));
+		HighScores ();
 	}
 }

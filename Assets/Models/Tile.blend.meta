@@ -4,10 +4,44 @@ ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
     100000: //RootNode
+    100002: Cube
+    100004: Gem1
+    100006: Gem1_001
+    100008: Gem1_002
+    100010: Gem1_003
+    100012: Gem
+    100014: Gem2
     400000: //RootNode
+    400002: Cube
+    400004: Gem1
+    400006: Gem1_001
+    400008: Gem1_002
+    400010: Gem1_003
+    400012: Gem
+    400014: Gem2
     2300000: //RootNode
+    2300002: Cube
+    2300004: Gem1
+    2300006: Gem1_001
+    2300008: Gem1_002
+    2300010: Gem1_003
+    2300012: Gem
+    2300014: Gem2
     3300000: //RootNode
+    3300002: Cube
+    3300004: Gem1
+    3300006: Gem1_001
+    3300008: Gem1_002
+    3300010: Gem1_003
+    3300012: Gem
+    3300014: Gem2
     4300000: Cube
+    4300002: Gem1_003
+    4300004: Gem1_002
+    4300006: Gem1_001
+    4300008: Gem1
+    4300010: Gem
+    4300012: Gem2
     7400000: Default Take
     9500000: //RootNode
   materials:

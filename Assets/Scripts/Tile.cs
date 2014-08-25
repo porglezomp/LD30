@@ -6,18 +6,27 @@ public class Tile : MonoBehaviour {
 
 	public bool animating;
 	int _number;
+	int _number2;
 	public int number {
 		get { return _number; }
 		set { 
 			_number = value;
-			label.text = number.ToString();
+			gem.renderer.material.color = Universe.instance.gemColors[number];
+		}
+	}
+	public int number2 {
+		get { return _number2; }
+		set {
+			_number2 = value;
+			gem2.renderer.material.color = Universe.instance.gemColors2[number2];
 		}
 	}
 
 	public int? break_id = null;
-
-	public Text label;
-	Vector3 grabOffset;
+	
+	public GameObject gem;
+	public GameObject gem2;
+//	Vector3 grabOffset;
 	Vector3 grabPoint;
 	Vector3 startPoint;
 	
@@ -37,7 +46,7 @@ public class Tile : MonoBehaviour {
 	{
 		startPoint = transform.position;
 		grabPoint = InputWorldPos();
-		grabOffset = startPoint - grabPoint;
+//		grabOffset = startPoint - grabPoint;
 	}
 
 	public void OnMouseDrag ()
@@ -126,5 +135,18 @@ public class Tile : MonoBehaviour {
 		Instantiate(particles, transform.position, Quaternion.identity);
 		AudioSource.PlayClipAtPoint(AssetManager.GetBang(), transform.position - Vector3.forward * 15);
 		Destroy(gameObject);
+	}
+
+	public void Flip()
+	{
+		Transform t = transform.GetChild(0);
+		t.Rotate(0, 1, 0);
+		Quaternion start = t.rotation;
+		t.Rotate(0, 179, 0);
+		Quaternion end = t.rotation;
+		t.rotation = start;
+		StartCoroutine(PAnim.Animation(Random.Range(-1f, 1f) + 2f, PAnim.ElasticWithDamping(0.5f), (time) => {
+			t.rotation = Extrap.Slerp(start, end, time);
+		}));
 	}
 }

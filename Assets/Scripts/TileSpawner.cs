@@ -12,20 +12,42 @@ public class TileSpawner : MonoBehaviour {
 	public const int w = 6;
 	public const int h = w;
 	const int tileStyles = 5;
+	const int tileStyles2 = 3;
 	public int[] stacks = new int[w];
 	Tile[,] tiles = new Tile[w, h];
 
-	// Use this for initialization
-	void Start ()
+	public void Spawn()
 	{
-		instance = this;
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
 				AddTileAtPosition(x, y);
 			}
 		}
-		DetectBreaks();
-		DoBreaks();
+	}
+
+	public void End()
+	{
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < h; y++) {
+				Destroy(tiles[x, y].gameObject);
+				tiles[x, y] = null;
+			}
+		}
+	}
+
+	public void Flip()
+	{
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < h; y++) {
+				tiles[x, y].Flip();
+			}
+		}
+	}
+
+	// Use this for initialization
+	void Start ()
+	{
+		instance = this;
 	}
 	
 	// Update is called once per frame
@@ -44,11 +66,13 @@ public class TileSpawner : MonoBehaviour {
 		}
 
 		GameObject t = (GameObject)GameObject.Instantiate(tilePrefab);
+		if (Universe.instance.world == 1) t.transform.GetChild(0).Rotate(0, 0, 180);
 		t.transform.position = pos;
 		t.transform.parent = canvas.transform;
 		t.name = "Tile";
 		Tile tile = t.GetComponent<Tile>();
 		tile.number = (int)Random.Range(0, tileStyles)+1;
+		tile.number2 = (int)Random.Range(0, tileStyles2)+1;
 		bool xbroken = true; bool ybroken = true;
 		if (fallIn != null) {
 			tile.Fall(y);
@@ -59,6 +83,7 @@ public class TileSpawner : MonoBehaviour {
 					    tiles[x-1, y].number == tile.number) {
 						xbroken = true;
 						tile.number = (int)Random.Range(0, tileStyles)+1;
+						tile.number2 = (int)Random.Range(0, tileStyles2)+1;
 					} else xbroken = false;
 				} else xbroken = false;
 				if (y > 1) {
@@ -75,17 +100,29 @@ public class TileSpawner : MonoBehaviour {
 
 	public bool DetectBreaks ()
 	{
+		int nextBreakId;
+		if (Universe.instance.world == 0) nextBreakId = _overworldDetectBreaks();
+		else nextBreakId = _underworldDetectBreaks();
+		// If there's a break, do it
+		if (nextBreakId > 0) {
+			DoBreaks();
+			return true;
+		}
+		return false;
+	}
+
+	int _overworldDetectBreaks() {
 		int nextBreakId = 0;
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
 				if (tiles[x, y] == null) continue;
 				int number = tiles[x, y].number;
 				int? break_id = tiles[x, y].break_id;
-
+				
 				Tile[] toAdd = new Tile[w];
 				int consecutive = 1;
 				toAdd[0] = tiles[x, y];
-
+				
 				// Match horizontal runs
 				for (int i = x+1; i < w; i++) {
 					if (tiles[i, y] == null) break;
@@ -101,18 +138,18 @@ public class TileSpawner : MonoBehaviour {
 						consecutive++;
 					} else break; // The run has ended
 				} // Match horizontal
-
+				
 				// If there were enough, add them to a break
 				if (consecutive >= 3) {
 					break_id = break_id ?? nextBreakId++;
-//					print("Horizontal break of size " + consecutive + " with break ID "
-//					      + break_id + ", starting at " + x + "" + y + ". " +
-//					      "Break is equal to " + number + ".");
+					//					print("Horizontal break of size " + consecutive + " with break ID "
+					//					      + break_id + ", starting at " + x + "" + y + ". " +
+					//					      "Break is equal to " + number + ".");
 					for (int i = 0; i < consecutive; i++) {
 						toAdd[i].break_id = break_id;
 					}
 				}
-
+				
 				toAdd = new Tile[h];
 				toAdd[0] = tiles[x, y];
 				consecutive = 1;
@@ -130,25 +167,45 @@ public class TileSpawner : MonoBehaviour {
 						consecutive++;
 					} else break; // The run has ended
 				} // Match vertical
-
+				
 				// If there were enough matches, add them to a break
 				if (consecutive >= 3) {
 					break_id = break_id ?? nextBreakId++;
-//					print("Vertical break of size "+ consecutive + " with break ID "
-//					      + break_id + ", starting at " + x + "" + y + ". " +
-//					      "Break is equal to " + number + ".");
+					//					print("Vertical break of size "+ consecutive + " with break ID "
+					//					      + break_id + ", starting at " + x + "" + y + ". " +
+					//					      "Break is equal to " + number + ".");
 					for (int i = 0; i < consecutive; i++) {
 						toAdd[i].break_id = break_id;
 					}
 				}
 			}
 		}
-		// If there's a break, do it
-		if (nextBreakId > 0) {
-			DoBreaks();
-			return true;
+		return nextBreakId;
+	}
+
+	int _underworldDetectBreaks () 
+	{
+		int nextBreakID = 0;
+		for (int x = 1; x < w; x++) {
+			for (int y = 1; y < h; y++) {
+				if (tiles[x, y] == null) continue;
+				int number = tiles[x, y].number2;
+				int? break_id = tiles[x, y].break_id;
+				if (tiles[x-1, y].number2 == number &&
+				    tiles[x-1, y-1].number2 == number &&
+				    tiles[x, y-1].number2 == number) {
+
+					if (break_id == null) {
+						break_id = nextBreakID++;
+						tiles[x, y].break_id = break_id;
+					}
+					tiles[x-1, y].break_id = break_id;
+					tiles[x, y-1].break_id = break_id;
+					tiles[x-1, y-1].break_id = break_id;
+				}
+			}
 		}
-		return false;
+		return nextBreakID;
 	}
 
 	public void DoBreaks()
@@ -168,8 +225,8 @@ public class TileSpawner : MonoBehaviour {
 			}
 		}
 		if (breaks > 0) {
-			if (combo > 0) print(breaks + " breaks. COMBO " + combo);
-			else print(breaks + " breaks, " + breakids + " unique.");
+//			if (combo > 0) print(breaks + " breaks. COMBO " + combo);
+//			else print(breaks + " breaks, " + breakids + " unique.");
 			Universe.instance.AddScore(breaks*breaks * (combo+1));
 			combo++;
 		}

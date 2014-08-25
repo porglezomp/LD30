@@ -57,3 +57,20 @@ Made sounds in Garageband
 Edit in audacity
 
 *5:20 PM:* Thwarted by airline pretzel packaging
+
+*Ran out of power some time in here.*
+*Switched to Jam*
+
+Monday
+======
+
+*Note:* This is in Pacific Time now
+
+*7:40 AM:* Awake, starting work
+*11:24 PM:* Leaderboard works fully, adds scores, also starting to move from numbers to colors
+
+*1:10 PM:* Has mulitple break rules and swaps between them, flip animation
+*2:29 PM:* New models, fixes some rendering issues (bad colors)
+*2:30 PM:* Realized that the timelapse was off for who knows how long. Ooops
+*SORRY GUYS*
+

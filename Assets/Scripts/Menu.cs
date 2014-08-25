@@ -7,9 +7,9 @@ public class Menu : MonoBehaviour {
 	{
 		Vector3 start = transform.position;
 		Vector3 end = transform.position - Vector3.up * 7.5f;
+		Universe.instance.StartGame();
 		StartCoroutine(PAnim.Animation(2, PAnim.ElasticWithDamping(0.7f), (t) => {
 			transform.position = Extrap.Lerp(start, end, t);
-			Universe.instance.StartGame ();
 		}));
 	}
 
